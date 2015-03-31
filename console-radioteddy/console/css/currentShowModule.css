@@ -1,23 +1,23 @@
 #currentShowModule
 {
 	width:730px;
-	height:328px;
+	height:295px;
 	margin:0;
-	padding-top:6px;
 	z-index:2;
-	position:absolute;
+	background:orange;
 }
 
 #currentShowModule #logo
 {
-	width:215px;
-	height:215px;
-	margin:10px 0 0 8px;
+	width:210px;
+	height:180px;
+	margin:0;
 	float:left;
 	cursor:pointer;
 	background-image:url(../img/_logo/logo_normal.png);	
 	background-repeat:no-repeat;
 	background-size:215px 215px;
+	background:yellow;
 }
 
 #currentShowModule #logo:hover
@@ -27,12 +27,21 @@
 
 #currentShowModule #show
 {
-	width:450px;
-	height:225px;
-	margin:6px 0 0 40px;
+	width:350px;
+	height:180px;
+	margin:0 0 0 10px;
 	float:left;
 	background-repeat:no-repeat;
 	background-size:450px 225px;
+	background:yellow;
+}
+
+#currentShowModule #com01 {
+	width:150px;
+	height:180px;
+	margin:0 0 0 10px;
+	background:yellow;
+	float:left;
 }
 
 #currentShowModule #pointer
@@ -40,7 +49,7 @@
 	width:30px;
 	height:20px;
 	position:absolute;
-	margin:230px 0 0 347px;
+	margin:190px 0 0 347px;
 	z-index:3;
 	background-image:url(../img/_channels/aktueller_stream.png);
 	background-size:30px 20px;
@@ -48,18 +57,20 @@
 
 #currentShowModule #channels
 {
-	width:694px;
+	width:730px;
 	height:95px;
-	margin:2px 0 0 15px;
+	margin:10px 0 0 0;
 	float:left;
+	background:yellow;
 }
 
 #currentShowModule #channels .channelSwitch
 {
-	width:95px;
+	width:113px;
 	height:95px;
 	float:left;
 	cursor:pointer;
+	background:blue;
 }
 
 #currentShowModule #channels #channelLeft
@@ -67,7 +78,7 @@
 	background-image:url(../img/_icons/pfeil_links.png);
 	background-repeat:no-repeat;
 	background-size:95px 95px;
-
+	background-position:9px 0px;
 }
 
 #currentShowModule #channels #channelSwitcher
@@ -112,6 +123,7 @@
 	background-image:url(../img/_icons/pfeil_rechts.png);
 	background-repeat:no-repeat;
 	background-size:95px 95px;
+	background-position:9px 0px;
 }
 
 #currentShowModule #leftChannel

@@ -1,74 +1,93 @@
 #coverMetaModule
 {
 	width:730px;
-	height:336px;
+	height:410px;
 	margin:0 0 0 0;
 	float:left;
+	background:green;
 }
 
 #coverMetaModule #cover
 {
-	width:234px;
-	height:234px;
-	margin:18px 0 0 23px;
+	width:200px;
+	height:200px;
+	margin:0 0 0 0;
 	float:left;
 }
 
 #coverMetaModule #current
 {
-	width:409px;
-	height:237px;
-	padding:0 15px 0 15px;
+	width:360px;
+	height:200px;
 	font-family:Arial;
 	color:#FFF;
 	float:left;
-	margin:17px 0 0 16px;
+	margin:0 0 0 10px;
 	background-image:url(../img/_player_bg/titel_info.png);
+	background:red;
 }
 
-#coverMetaModule #current #now
+#coverMetaModule #current #currentTrack {
+	width:360px;
+	height:132px;
+	margin:0 0 0 0;
+	background:purple;
+}
+
+#coverMetaModule #current #currentTrack #now
 {
 	width:72px;
 	height:20px;
-	margin:8px 0 5px 0px;
+	margin:8px 0 0 8px;
 	float:left;
 	background-image:url(../img/_buttons/sie_hoeren.png);
 }
 
-#coverMetaModule #current #onAir.notOnAir{background-image:none}
-#coverMetaModule #current #onAir.onAir{background-image:url(../img/_on_air/on_air_icon.png);}
+#coverMetaModule #current #trackInfos {
+	width:360px;
+	height:132px;
+	margin:0;
+	background:yellow;
+}
 
-#coverMetaModule #current #artist
+#coverMetaModule #current #currentTrack #trackInfos #artist
 {
-	width:409px;
-	height:60px;
+	width:344px;
+	height:30px;
 	overflow: hidden;
 	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight:bold;
 	font-size:20px;
-	margin:0;
+	margin:31px 0 0 8px;
+	line-height:30px;
 	text-transform: uppercase;
+	float:left;
+	background:blue;
 }
 
-#coverMetaModule #current #song
+#coverMetaModule #current #currentTrack #trackInfos #song
 {
-	width:409px;
+	width:244px;
 	height:20px;
 	overflow: hidden;
 	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:15px;
-	margin-top:3px;
+	margin:3px 0 0 8px;
+	line-height:20px;
+	float:left;
+	background:blue;
 }
 
-#coverMetaModule #socialMedia
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia
 {
-	width:409px;
+	width:100px;
 	height:40px;
-	margin:195px 0 0 291px;
-	position:absolute;
+	margin:3px 0 0 8px;
+	float:left;
+	background:blue;
 }
 
-#coverMetaModule #socialMedia a 
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia a 
 {
 	width:50px;
 	height:40px;
@@ -78,22 +97,23 @@
 	background-position:5px 0;
 }
 
-#coverMetaModule #socialMedia #yt{background-image:url(../img/_link_buttons/youtube.png);}
-#coverMetaModule #socialMedia #wiki{background-image:url(../img/_link_buttons/wikipedia.png);}
-#coverMetaModule #socialMedia #google{background-image:url(../img/_link_buttons/googleplus.png);}
-#coverMetaModule #socialMedia #itunes{background-image:url(../img/_link_buttons/itunes.png);}
-#coverMetaModule #socialMedia #amzn{background-image:url(../img/_link_buttons/amazon.png);}
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia #yt{background-image:url(../img/_link_buttons/youtube.png);}
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia #wiki{background-image:url(../img/_link_buttons/wikipedia.png);}
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia #google{background-image:url(../img/_link_buttons/googleplus.png);}
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia #itunes{background-image:url(../img/_link_buttons/itunes.png);}
+#coverMetaModule #current #currentTrack #trackInfos #socialMedia #amzn{background-image:url(../img/_link_buttons/amazon.png);}
 
-#coverMetaModule #prevTrack
+#coverMetaModule #current #prevTrack
 {
-	width:239px;
+	width:360px;
 	height:58px;
-	margin:16px 0 0 18px;
+	margin:10px 0 0 0;
 	float:left;
 	background-image:url(../img/_player_bg/letzter_song.png);
+	background:purple;
 }
 
-#coverMetaModule #prevTrack #prevTrackCover
+#coverMetaModule #current #prevTrack #prevTrackCover
 {
 	width:58px;
 	height:58px;
@@ -101,43 +121,71 @@
 	float:left;
 }
 
-#coverMetaModule #prevTrack #prevTrackInfo
+#coverMetaModule #current #prevTrack #prevTrackInfo
 {
-	width:176px;
+	width:297px;
 	height:58px;
 	margin-left:5px;
 	float:left;
 	color:#FFF;
 	font-family:Arial;
+	background:blue;
 }
 
-#coverMetaModule #prevTrack #prevTrackInfo #before
+#coverMetaModule #current #prevTrack #prevTrackInfo #before
 {
 	width:170px;
 	height:15px;
 	overflow:hidden;
 	font-size:12px;
 	margin:4px 0 0 0;
+	background:yellow;
 }
-#coverMetaModule #prevTrack #prevTrackInfo #beforeArtist
+#coverMetaModule #current #prevTrack #prevTrackInfo #beforeArtist
 {
-	width:170px;
+	width:297px;
 	height:15px;
 	overflow:hidden;
 	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight:bold;
 	font-size:12px;
 	margin:3px 0 3px 0;
+	background:red;
 
 }
-#coverMetaModule #prevTrack #prevTrackInfo #beforeSong
+#coverMetaModule #current #prevTrack #prevTrackInfo #beforeSong
 {
-	width:170px;
+	width:297px;
 	height:15px;
 	overflow:hidden;
 	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:12px;
 	margin:0 0 5px 0;
+	background:red;
+}
+
+#coverMetaModule #com02 {
+	width:150px;
+	height:200px;
+	margin:0 0 0 10px;
+	float:left;
+	background:red;
+}
+
+#coverMetaModule #contact {
+	width:730px;
+	height:105px;
+	margin:10px 0 0 0;
+	float:left;
+	background:red;
+}
+
+#coverMetaModule #com03 {
+	width:730px;
+	height:85px;
+	margin:10px 0 0 0;
+	float:left;
+	background:red;
 }
 
 #coverMetaModule #playerControls

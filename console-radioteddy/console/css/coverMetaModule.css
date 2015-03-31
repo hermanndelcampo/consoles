@@ -1,17 +1,17 @@
 #coverMetaModule
 {
 	width:730px;
-	height:379px;
-	margin:334px 0 0 0;
+	height:418px;
+	margin:0 0 0 0;
 	z-index:2;
-	position:absolute;
+	background:green;
 }
 
 #coverMetaModule img#cover
 {
-	width:320px;
-	height:320px;
-	margin:15px 0 0 15px;
+	width:308px;
+	height:308px;
+	margin:0 0 0 15px;
 	background:#009fe3;
 	float:left;
 	position:absolute;
@@ -20,12 +20,12 @@
 #coverMetaModule #current
 {
 	width:730px;
-	height:360px;
+	height:308px;
 	margin:0 0 0 0;
 	float:left;
-	position:absolute;
 	background-image:url(../img/player.png);	
 	background-repeat: no-repeat;
+	background:red;
 }
 
 #coverMetaModule #current #currentInfos
@@ -161,6 +161,14 @@
 	margin:5px 0 0 0;
 	font-size: 11px;
 	overflow: hidden;
+}
+
+#coverMetaModule #com02 {
+	width:730px;
+	height:100px;
+	margin:10px 0 0 0;
+	float:left;
+	background:purple;
 }
 
 #coverMetaModule #player

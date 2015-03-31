@@ -1,21 +1,23 @@
 #currentShowModule
 {
 	width:730px;
-	height:377px;
+	height:305px;
 	float:left;
 	margin:0 0 0 0;
+	background:blue;
 }
 
 #currentShowModule #logo
 {
-	width:239px;
-	height:249px;
+	width:210px;
+	height:180px;
 	float:left;
-	margin:8px 0 0 18px;
+	margin:0 0 0 0;
 	cursor:pointer;
 	background-image:url(../img/_bb_logo/logo_normal.png);
 	background-repeat:no-repeat;
 	background-size:239px 249px;
+	background:red;
 }
 
 #currentShowModule #logo:hover
@@ -31,41 +33,53 @@
 	width:84px;
 	height:21px;
 	position:absolute;
-	margin:17px 0 0 279px;
+	margin:8px 0 0 228px;
 	background-image:url(../img/_buttons/es_laeuft_eq.png);	
+	background-repeat:no-repeat;
 }
 
 #currentShowModule #show
 {
-	width:440px;
-	height:249px;
-	margin:8px 0 0 14px;
+	width:350px;
+	height:180px;
+	margin:0 0 0 10px;
 	background-repeat:no-repeat;
 	float:left;	
+	background:red;
+}
+
+#currentShowModule #com01 {
+	width:150px;
+	height:180px;
+	margin:0 0 0 10px;
+	float:left;
+	background:red;
 }
 
 #currentShowModule #channels
 {
-	width:694px;
+	width:730px;
 	height:105px;
-	margin:15px 0 0 18px;
+	margin:10px 0 0 0;
 	float:left;
 	background-image:url(../img/_player_bg/karussell.png);
+	background:red;
 }
 
 #currentShowModule #channels .channelSwitch
 {
-	width:53px;
+	width:71px;
 	height:105px;
 	float:left;	
 	cursor:pointer;
+	background:white;
 }
 
 #currentShowModule #channels #channelLeft
 {
 	background-image:url(../img/_buttons/pfeil_links_black.png);
 	background-repeat:no-repeat;
-	background-position:6px 32px;
+	background-position:16px 32px;
 
 }
 
@@ -77,6 +91,7 @@
 	height:105px;	
 	float:left;
 	overflow:hidden;
+	background:purple;
 }
 
 #currentShowModule #channels #channelSwitcher ul
@@ -100,7 +115,7 @@
 {
 	background-image:url(../img/_buttons/pfeil_rechts_black.png);
 	background-repeat:no-repeat;
-	background-position:7px 32px;
+	background-position:15px 32px;
 }
 
 #currentShowModule #channels #channelRight:hover{background-image:url(../img/_buttons/pfeil_rechts_white.png);}
