@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>  <html class="ie ie6 lte9 lte8 lte7" lang="en"> <![endif]-->
+<!--[if IE 7]>     <html class="ie ie7 lte9 lte8 lte7" lang="en"> <![endif]-->
+<!--[if IE 8]>     <html class="ie ie8 lte9 lte8" lang="en"> <![endif]-->
+<!--[if IE 9]>     <html class="ie ie9 lte9" lang="en"> <![endif]-->
+<!--[if gt IE 9]>  <html lang="en"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--
+All intellectual property rights in this Software throughout the world belong to UK Radioplayer, 
+rights in the Software are licensed (not sold) to subscriber stations, and subscriber stations 
+have no rights in, or to, the Software other than the right to use it in accordance with the 
+Terms and Conditions at www.radioplayer.co.uk/terms. You shall not produce any derivate works 
+based on whole or part of the Software, including the source code, for any other purpose other 
+than for usage associated with connecting to the UK Radioplayer Service in accordance with these 
+Terms and Conditions, and you shall not convey nor sublicense the Software, including the source 
+code, for any other purpose or to any third party, without the prior written consent of UK Radioplayer.
+-->
+<meta name="description" content="" />
+<meta name="keywords" content="" /> 
+<meta name="DCTERMS.created" content="" /> 
+<meta name="DCTERMS.modified" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/" /> 
+
+<title>BB RADIO</title> 
+
+<!--
+<link type="text/css" rel="stylesheet" media="screen" href="style/radioplayer.min.css" />
+-->
+
+<link type="text/css" rel="stylesheet" media="screen" href="style/radioplayer.min.css" />
+<link type="text/css" rel="stylesheet" media="screen" href="style/theme.css" />
+
+<link rel="stylesheet" type="text/css" href="css/otherStyles.css" />
+<link rel="stylesheet" type="text/css" href="css/coverMetaModule.css" />
+<link rel="stylesheet" type="text/css" href="css/currentShowModule.css" />
+<link href="css/jquery-ui.css" rel="stylesheet">
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" >
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<!--<script type="text/javascript" src="js/pluginLogic.js"></script>-->
+
+<script type="text/javascript">
+/**
+ * Console Settings
+ */
+
+var currentStationID = "46";
+var currentStationName = "BB RADIO";
+
+// -- nowPlayingSource can be changed from 'default' to one of: 'default-no-stream', 'stream', 'SI', 'PI'
+var nowPlayingSource = 'default';
+
+// -- xDomainProxyUrl should be the full URL to the xdomainproxy.html file, which by default is found in the preroll-framework directory
+//var xDomainProxyUrl = "http://your-console-domain.com/console-path/preroll-framework/xdomainproxy.html";
+var xDomainProxyUrl = "";
+
+// -- initOptions can be populated with settings for actions when the console starts. See integration guide for details.
+var initOptions = {
+	interstitial : {
+		enabled : false,
+		url : 'preroll-framework/'
+	},
+	songaction : {
+		enabled : false,
+		type : 'Buy',
+		baseurl : 'http://www.your-affiliate-url.com/'
+	},
+	overlay : {
+		enabled : false,
+		url : 'preroll-framework/',
+		mute : true
+	}
+};
+
+
+/**
+ * Audio Settings (V3 API)
+ */
+
+// -- Set audioLive to true for live streaming, or false for on demand
+var audioLive = true;
+
+// -- Added your primary stream details here
+var audioFlash = [{
+	audioType: 'http',
+	audioUrl: 'http://streams.ir-media-tec.com/bbradio.mp3',
+	audioServer: '',
+	audioEndpoint: ''
+}];
+
+// -- Add your HTML5 supported stream details here
+var audioHTML = [{
+    audioType: 'http',
+    audioUrl: 'http://streams.ir-media-tec.com/bbradio.mp3'
+}];
+
+// -- bufferTime may need to be adjusted in rare circumstances to facilitate faster loading
+var bufferTime = 5;
+
+/* Appstettings */
+var vol = 0.9;															//Setting Standardvolume
+var channellistfeed = "http://webplayer.bbradio.de/bbradiostreams.php";	//Mainfeed for the webplayer
+var streamfeedbase = "http://webplayer.bbradio.de/channelinfo.php?ch=";	//Streamspezific Infofeedbase
+var defaultCoverUrl = "img/_channels_header/default.png";				//Url for the default-Cover			
+var defaultArtistText = "Sie hören BB RADIO...";						//Defaulttext for artistspace
+var defaultSongText = "Viel Spaß beim Hören!";							//Defaulttext for songspace
+var defaultLastArtistText = "Sie hören BB RADIO.";						//Defaulttext for last-artistspace
+var defaultLastSongText = "Viel Spaß beim Hören!";						//Defaulttext for last-songspace
+
+/* Initialized variables */		
+var current_center_index = 0;		//ID of centered Stream
+var now_playing_index = 0;			//ID of played Stream
+var stream_count = 0;				//Number of Streams
+var playing = false;				//Boolean for Playing-Status	
+var feedSongCopy = "init";			//Cache for last track
+
+/* Arrays for Streaminfos from Feeds */
+var streamlinksmp3 = [];			//Streamlinks in .mp3-Format
+var streamlinksogg = [];			//Streamlinks in .ogg-Format	
+var streamfeeds = [];				//Infofeeds for Streams
+var streamtoken = [];				//Unique Token for graphics etc.
+var streamnames = [];				//Name of the stream
+var streamclaims = [];				//Streamclaims
+
+/* Initializing and caching streaminfos */
+function init(){
+	$.ajax({
+		type:"GET",
+		crossDomain: "true",
+		url: channellistfeed,
+		dataType: "json",
+		error: function(xhr, dings, thrown){
+			alert('Es ist ein schwerwiegender Fehler aufgetreten, Bitte überprüfen Sie Ihre Internetverbindung und aktivieren Sie Javascript');
+		},
+		success: function(data){
+			var iObject = data;
+			$.each(iObject, function(){
+				streamfeeds[this.sort] = streamfeedbase + this.key;
+				streamtoken[this.sort] = this.key;
+				streamnames[this.sort] = this.name;
+				streamlinksmp3[this.sort] = this.mp3;
+				streamclaims[this.sort] = this.text;
+				stream_count++;
+			});
+			for(var i = 0; i < stream_count; i++){
+				if(i == 0){
+					$('#channelSwitcher ul').append('<li id="channel' + (i + 1) + '" class="active" style="background-image:url(img/_channels_thumbs/_aktiv/' + streamtoken[i] + '.png);"></li>');
+				} else {
+					$('#channelSwitcher ul').append('<li id="channel' + (i + 1) + '" class="inactive" style="background-image:url(img/_channels_thumbs/_inaktiv/' + streamtoken[i] + '.png);"></li>');
+				}
+				$('#channelContainer').append('<div class="overlayChannel" onClick="overlayChange('+ i +')" ><div style="background-image:url(img/_channels_thumbs/_inaktiv/'+ streamtoken[i] +'.png);"></div><p>'+ streamclaims[i] +'</p></div>');							
+			}
+
+			$('#channelSwitcher ul').prepend('<li id="channel0" class="inactive" style="background-image:url(img/_channels_thumbs/_inaktiv/' + streamtoken[stream_count - 1] + '.png);"></li>');
+			$('#channelSwitcher ul').append('<li id="channel' + stream_count + 1 + '" class="inactive" style="background-image:url(img/_channels_thumbs/_inaktiv/' + streamtoken[0] + '.png);"></li>');
+			
+			playStream();
+			getInfos();
+		}
+	})
+};
+
+function getInfos(){
+	$.ajax({
+		type: "GET",
+		crossDomain: "true",
+		url: streamfeeds[current_center_index],
+		dataType: "json",
+		error: function(xhr, dings, thrown){
+			alert('error');
+			$('#artist').text(defaultArtistText);
+			$('#song').text(defaultSongText);
+			$('#cover').attr('src', defaultCoverUrl);
+			$('#beforeArtist').text(defaultLastArtistText);
+			$('#beforeSong').text(defaultLastSongText);
+			$('#prevTrackCover').attr('src', defaultCoverUrl);
+		},
+		success: function(data){
+			var object = data;					
+			if(object.err == "NODATA"){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+				$('#beforeArtist').text(defaultLastArtistText);
+				$('#beforeSong').text(defaultLastSongText);
+				$('#prevTrackCover').attr('src', defaultCoverUrl);
+			}
+			if(feedSongCopy != object[0].Titel){
+				$('#yt').css('display', 'none'); $('#wiki').css('display', 'none'); 
+				$('#google').css('display', 'none'); $('#itunes').css('display', 'none');
+				$('#amzn').css('display', 'none');
+				//Aktueller Titel
+				if(object[0].Titel == ""){
+					$('#artist').text(defaultArtistText);
+					$('#song').text(defaultSongText);
+					$('#cover').attr('src', defaultCoverUrl);
+				} else {
+					$('#artist').text(object[0].Interpret);
+					$('#song').text(object[0].Titel);
+					if(object[0].CoverArtPic != ""){
+						$('#cover').attr('src', object[0].CoverArtPic);
+					} else {
+						$('#cover').attr('src', defaultCoverUrl);
+					}								
+					if(object[0].Linkshop1 != ""){
+						$('#amzn').attr('href', object[0].Linkshop1);
+						$('#amzn').css('display', 'block');
+					}
+					if(object[0].Linkshop2 != ""){
+						$('#itunes').attr('href', object[0].Linkshop2);
+						$('#itunes').css('display', 'block');
+					}								
+				}
+				feedSongCopy = object[0].Titel;
+				//Letzter Titel
+				if(object[1].Titel == ""){
+					$('#beforeArtist').text(defaultLastArtistText);
+					$('#beforeSong').text(defaultLastSongText);
+					$('#prevTrackCover').attr('src', defaultCoverUrl);
+				} else {
+					$('#beforeArtist').text(object[1].Interpret);
+					$('#beforeSong').text(object[1].Titel);
+					if(object[1].CoverArtPic != ""){
+						$('#prevTrackCover').attr('src', object[1].CoverArtPic);
+					} else {
+						$('#prevTrackCover').attr('src', defaultCoverUrl);
+					}
+				}							
+			}					
+		}
+	});				
+	setTimeout("getInfos();", 5000);			
+};
+
+function getInfosOnce(){
+	$.ajax({
+		type: "GET",
+		crossDomain: "true",
+		url: streamfeeds[current_center_index],
+		dataType: "json",
+		error: function(){
+			$('#artist').text(defaultArtistText);
+			$('#song').text(defaultSongText);
+			$('#cover').attr('src', defaultCoverUrl);
+			$('#beforeArtist').text(defaultLastArtistText);
+			$('#beforeSong').text(defaultLastSongText);
+			$('#prevTrackCover').attr('src', defaultCoverUrl);
+		},
+		success: function(data){
+			var object = data;
+			$('#yt').css('display', 'none'); $('#wiki').css('display', 'none'); 
+			$('#google').css('display', 'none'); $('#itunes').css('display', 'none');
+			$('#amzn').css('display', 'none'); 
+
+			if(object.err == "NODATA"){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+				$('#beforeArtist').text(defaultLastArtistText);
+				$('#beforeSong').text(defaultLastSongText);
+				$('#prevTrackCover').attr('src', defaultCoverUrl);
+			}
+			//Aktueller Titel
+			if(object[0].Titel == ""){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+			} else {
+				$('#artist').text(object[0].Interpret);
+				$('#song').text(object[0].Titel);
+				if(object[0].CoverArtPic != ""){
+					$('#cover').attr('src', object[0].CoverArtPic);
+				} else {
+					$('#cover').attr('src', defaultCoverUrl);
+				}								
+				if(object[0].Linkshop1 != ""){
+					$('#amzn').attr('href', object[0].Linkshop1);
+					$('#amzn').css('display', 'block');
+				}
+				if(object[0].Linkshop2 != ""){
+					$('#itunes').attr('href', object[0].Linkshop2);
+					$('#itunes').css('display', 'block');
+				}								
+			}
+			feedSongCopy = object[0].Titel;
+			//Letzter Titel
+			if(object[1].Titel == ""){
+				$('#beforeArtist').text(defaultLastArtistText);
+				$('#beforeSong').text(defaultLastSongText);
+				$('#prevTrackCover').attr('src', defaultCoverUrl);
+			} else {
+				$('#beforeArtist').text(object[1].Interpret);
+				$('#beforeSong').text(object[1].Titel);
+				if(object[1].CoverArtPic != ""){
+					$('#prevTrackCover').attr('src', object[1].CoverArtPic);
+				} else {
+					$('#prevTrackCover').attr('src', defaultCoverUrl);
+				}
+			}													
+		}
+	});			
+};
+
+function switchLeft(){
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) + 196;
+	if(current_center_index == 0){
+		current_center_index = stream_count - 1;
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			$('#channelSwitcher ul').css('margin-left', -((stream_count - 1) * 196));
+			$('#channelSwitcher ul li').eq(1).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[0] +'.png)');
+			$('#channelSwitcher ul li').eq(stream_count).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/' + streamtoken[(stream_count - 1)] + '.png)');
+		}); 
+
+	} else {
+		current_center_index--;		
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){});		
+		if(current_center_index != 0){
+			$('#channelSwitcher ul li').eq(current_center_index + 1).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/'+ streamtoken[current_center_index] +'.png)');						
+		} else {
+			$('#channelSwitcher ul li').eq(current_center_index + 1).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/'+ streamtoken[0] +'.png)');
+		}
+		$('#channelSwitcher ul li').eq(current_center_index + 2).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[current_center_index + 1] +'.png)');										
+	}			
+
+	if(playing == false){
+		$('#controlsPlay').removeClass().addClass('playUnpressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');	
+	} else if (playing == true && current_center_index != now_playing_index){
+		$('#controlsPlay').removeClass().addClass('playUnpressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index == now_playing_index){
+		$('#controlsPlay').removeClass().addClass('playPressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('onAir');
+	}
+	getInfosOnce();
+};
+
+function switchRight(){
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) - 196;
+	if(current_center_index == (stream_count - 1)){ 
+		current_center_index = 0; 
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			$('#channelSwitcher ul').css('margin-left', 0);
+			$('#channelSwitcher ul li').eq(current_center_index + 1).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/'+ streamtoken[0] +'.png)');
+			$('#channelSwitcher ul li').eq(stream_count).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[stream_count - 1] +'.png)');
+		}); 
+	} else {
+		current_center_index++;		
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			if(current_center_index != 1){
+				$('#channelSwitcher ul li').eq(current_center_index).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[current_center_index - 1] +'.png)');
+			} else {
+				$('#channelSwitcher ul li').eq(current_center_index).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[0] +'.png)');					
+			}
+			$('#channelSwitcher ul li').eq(current_center_index + 1).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/'+ streamtoken[current_center_index] +'.png)');					
+		});
+	}
+
+	if(playing == false){
+		$('#controlsPlay').removeClass().addClass('playUnpressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');	
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index != now_playing_index){
+		$('#controlsPlay').removeClass().addClass('playUnpressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index == now_playing_index){
+		$('#controlsPlay').removeClass().addClass('playPressed');
+		$('#controlsStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('onAir');
+	}
+	getInfosOnce();	
+};
+
+function showOverlay(){
+	$('#overlay').css('display', 'block');
+};
+
+function closeOverlay(){
+	$('#overlay').css('display', 'none');
+};	
+
+function playStream(){
+	$('#controlsPlay').removeClass().addClass('playPressed');
+	$('#controlsStop').removeClass().addClass('stopUnpressed');
+	$('#onAir').removeClass().addClass('onAir');
+	var audio = document.getElementById('player');
+	if(audio.canPlayType('audio/mpeg;')){
+		$('#player').attr('type', 'audio/mpeg');
+		$('#player').attr('src', streamlinksmp3[current_center_index]);
+	} else {
+		$('#player').attr('type', 'audio/ogg');
+		$('#player').attr('src', streamlinksogg[current_center_index]);
+	}
+	if(current_center_index == 0){
+		$('#show').css('background-image', 'url(img/_channels_header/'+ streamtoken[0] +'.png)');
+	} else {
+		$('#show').css('background-image', 'url(img/_channels_header/'+ streamtoken[current_center_index] +'.png)');
+	}				
+	now_playing_index = current_center_index;			
+	playing = true;
+	audio.volume = vol;
+	onAirChange();
+	audio.load();
+	audio.play();
+};
+
+function stopStream(){
+	$('#controlsPlay').removeClass().addClass('playUnpressed');
+	$('#controlsStop').removeClass().addClass('stopPressed');
+	var audio = document.getElementById('player');
+	playing = false;
+	audio.pause();
+};
+
+function onAirChange(){
+	$('#show').removeClass().addClass('show0' + (current_center_index));
+};
+
+function overlayChange(index){
+	$('#channelSwitcher ul').css('margin-left', -(index * 196));
+	$('#channelSwitcher ul li').eq(current_center_index +1).removeClass().addClass('inactive').css('background-image', 'url(img/_channels_thumbs/_inaktiv/'+ streamtoken[current_center_index] +'.png)');
+	$('#channelSwitcher ul li').eq(index + 1).removeClass().addClass('active').css('background-image', 'url(img/_channels_thumbs/_aktiv/'+ streamtoken[index] +'.png)');
+	current_center_index = index;
+	closeOverlay();
+	getInfosOnce();
+	playStream();
+};	
+
+function playLeftChannel(){
+	switchLeft();				
+	playStream();
+};
+
+function playRightChannel(){
+	switchRight();
+	playStream();
+};
+
+//Custommade Slider
+var value = 90;
+var posXCache = 0;
+$(function(){    
+    $('.slider').each(function() {    	
+    	
+	    controlGroup = $(this).attr('data-control-group');
+	    percentage = ( parseInt($(this).val()) / 100 );
+
+	    htm = '<div class="slide-control">'+
+	        '<div class="slide-control-button" data-control-group="'+controlGroup+'"></div>'+
+	        '</div>';
+	    $(this).after(htm).attr('readonly', true).css('display', "none");
+	    $('.slide-control-button[data-control-group='+controlGroup+']').css({left: 200*percentage});	        
+	        
+	    // dragging example
+	    var slider  = $(this).next();
+	    var btn = slider.find('.slide-control-button');
+	    var startOffset, holderOffset, sliderWidth, handleWidth;
+	        
+	    btn.on('mousedown', function(e) {
+	       e.preventDefault(); 
+	        holderOffset = slider.offset().left;
+	        startOffset = btn.offset().left - holderOffset;
+	        sliderWidth = slider.width();
+	        
+	        $(document).on('mousemove', moveHandler);
+	        $(document).on('mouseup', stopHandler);                
+	    });
+	    //Action while dragging
+	    function moveHandler(e) {
+	        var posX = e.pageX - holderOffset;
+	        posX = Math.min(Math.max(0, posX), sliderWidth);
+	        btn.css({
+	            left: posX
+	        });
+	        value = Math.floor(posX / 2);
+	        posXCache = posX;	        
+	    }
+	    //Refresh Volume when stop dragging
+	    function stopHandler() {
+	    	var audio = document.getElementById('player');
+	    	vol = value / 100;								
+			audio.volume = vol;			
+	        $(document).off('mousemove', moveHandler);
+	        $(document).off('mouseup', stopHandler);
+	    } 
+	    //Making volume up button work
+	    $('#volUp').on('click', function(e) {
+	    	e.preventDefault();
+	    	var leftVal = parseInt(btn.css('left'), 10);
+	    	if(leftVal <= 190){
+	    		btn.css({left: '+=10'});
+	    	} else {
+	    		btn.css({left: 200});
+	    	}
+	    	value = leftVal / 2;
+	        var audio = document.getElementById('player');
+	    	vol = value / 100;								
+			audio.volume = vol;
+	    });
+	    //Making volume down button work
+		$('#volDown').on('click', function(e) {
+			e.preventDefault();
+			var leftVal = parseInt(btn.css('left'), 10);
+			if(leftVal >= 10){
+				btn.css({left: '-=10'});
+			} else {
+				btn.css({left: 0});
+			}
+	        value = leftVal / 2;
+	        var audio = document.getElementById('player');
+	    	vol = value / 100;								
+			audio.volume = vol;
+		});   
+	});
+});
+
+</script>
+</head> 
+<body onLoad="init();">
+
+<!--
+
+In the following line starting <div class="radioplayer
+dark-theme may be swapped for light-theme
+
+'dark-theme' should be used to display a dark set of buttons, when you have chosen a light background
+'light-theme' should be used to display a white set of buttons, when you have chosen a dark background
+
+-->
+
+  <div  class="radioplayer light-theme" >
+  
+    <h1 class="access">BB RADIO</h1>
+	
+	<div class="radioplayer-globalnav-wrapper">
+
+		<div class="radioplayer-globalnav">
+		
+		  <button type="button" class="menu-btn overlay-btn" rel="toggle" role="button" aria-haspopup="true" aria-owns="overlay-container">
+		    <span>Toggle radioplayer.de Menu</span>
+		  </button>
+		  
+		  <div class="search-box">
+			<fieldset>
+				<h2 class="access">Search</h2>
+				<input type="text" name="searchq" id="search-input" value="" maxlength="27" autocomplete="off" />
+				<button type="button" id="search-button" title="Search"><span>Search</span></button>
+				<button type="button" id="search-clear" title="Clear search terms"><span>Clear search terms</span></button>
+			</fieldset>
+		  </div>
+		  
+		  <span class="rp-logo overlay-btn">
+			radioplayer.de
+		  </span>
+		
+		</div>
+	
+	</div>
+	
+	<div id="overlay-container" class="overlay-container">
+		
+		  <div class="search-container">
+		  
+			<div class="tabs" role="navigation">
+			  <ul id="search-nav-toggle" class="nav">
+				<li>
+					<a href="#">All<span class="menu_toggle"></span></a>
+				</li>
+			  </ul>
+			  <ul id="search-nav-main" class="nav">
+				<li class="first" data-content="searchall">
+				  <a href="#" role="button" aria-owns="search-all-cont"><span>All</span></a>
+				</li>
+				<li data-content="searchlive">
+				  <a href="#" role="button" aria-owns="search-live-cont"><span>Live</span></a>
+				</li>
+				<li data-content="searchod">
+				  <a href="#" role="button" aria-owns="search-od-cont"><span>Catch Up</span></a>
+				</li>
+			  </ul>
+			</div>
+			
+			<div class="search-wrapper">
+			
+			  <div class="tab-container scrollable-wrapper" id="search-all-cont"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="search-live-cont"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="search-od-cont"></div>
+			
+			  <span class="spinner"><img src="img/spinner.gif" alt="" /></span>
+			
+			</div>
+		  
+		  </div>
+		  
+		  <div class="suggest-container" data-results="0">
+		  
+			<div class="scrollable-wrapper">
+			
+				<div id="suggest-results"></div>
+				
+				<div class="suggest-item show-all"><a href="#"></a></div>
+			
+			</div>
+		  
+		  </div>
+		
+		  <div class="menu-container">
+		  
+			<div class="tabs" role="navigation">
+			  <ul id="menu-nav-toggle" class="nav">
+				<li>
+					<a href="#">My Stations<span class="menu_toggle"></span></a>
+				</li>
+			  </ul>
+			  <ul id="menu-nav-main" class="nav">
+				<li class="first" data-color="#ff4539" data-content="mystations">
+				  <a href="#" role="button" aria-owns="mystations-container"><span>My Stations</span></a>
+				</li>
+				<li data-color="#9b2d77" data-content="history">
+				  <a href="#" role="button" aria-owns="history-container"><span>Recent</span></a>
+				</li>
+				<li data-color="#03303d" data-content="recommended">
+				  <a href="#" role="button" aria-owns="recom-container"><span>Recommended</span></a>
+				</li>
+				<li data-color="#f6b220" data-content="azlist">
+				  <a href="#" role="button" aria-owns="az-container"><span>A-Z List</span></a>
+				</li>
+			  </ul>
+			</div>
+			
+			<div class="tabs-wrapper">
+			
+			  <div class="tab-container scrollable-wrapper" id="mystations-container"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="history-container"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="recom-container"></div>
+			  
+			  <div class="tab-container" id="az-container">
+				
+				<div class="alphabet">
+				  <ul></ul>
+				</div>
+				
+				<div class="sticky-divide-wrapper">
+				  <div class="sticky-divide">#</div>
+				
+				  <div class="scrollable-wrapper azlist-container" id="azlist-container"></div>
+				</div>
+				
+			  </div>
+			  
+			  <span class="spinner"><img src="img/spinner.gif" alt="" /></span>
+			  
+			</div>
+			
+		  </div>
+		
+	</div>
+
+    <div class="radioplayer-emp-container">
+        <div id="empv3"></div>
+    </div>
+
+	<div class="radioplayer-localwrapper">
+	
+		<div class="radioplayer-head">
+		
+			<a class="stn-logo"  href="http://www.bbradio.de" target="_blank"   id="station-logo-link" rel="external">BB RADIO</a>
+		  
+			<div id="controls">
+				<h2 class="access">Player Controls</h2>  
+				
+				<div id="mystations-toggle">
+					<button type="button" id="toggle-mystations"><span>Toggle this station in My Stations</span></button>
+				</div>
+				 
+				<div id="play-controls">
+					<button type="button" id="play" title="Play"><span>Play</span></button>
+					<button type="button" id="pause" title="Pause"><span>Pause</span></button>
+					<button type="button" id="stop" title="Stop"><span>Stop</span></button>
+				</div>
+				
+				<div id="volume-controls">
+					<div id="volume-control" class="p100"></div>
+					<button type="button" id="volume-mute" class="access" tabindex="0"><span>Mute or unmute volume</span></button>
+					<button type="button" id="volume-1" class="access" tabindex="0"><span>Set volume to 20%</span></button>
+					<button type="button" id="volume-2" class="access" tabindex="0"><span>Set volume to 40%</span></button>
+					<button type="button" id="volume-3" class="access" tabindex="0"><span>Set volume to 60%</span></button>
+					<button type="button" id="volume-4" class="access" tabindex="0"><span>Set volume to 80%</span></button>
+					<button type="button" id="volume-5" class="access" tabindex="0"><span>Set volume to 100%</span></button>
+				</div>
+				
+			</div>
+			
+			<div class="now-playing-strip">
+			
+			  <div id="live-strip" class="loading">
+
+                <div class="loading-indicator"></div>
+                <div class="live-info">
+                    <span id="live" class="live-indicator">Live</span>
+                    <div class="scrolling-container" tabindex="0">
+                        <div class="scrolling-text"></div>
+                    </div>
+                </div>
+			  </div>
+			  
+			  <div id="od-strip">
+		  
+		  		<div id="duration">Loading...</div>
+		  
+		  		<div id="progress-scrubber-background">
+				
+					<div id="progress-scrubber-playback-bar"></div> 
+					<div id="progress-scrubber-load-bar"></div> 
+					<div id="od-title"></div>
+					
+					<div id="progress-scrubber-handle"></div> 
+				
+				</div>
+			  
+			  </div>	
+				
+			</div>
+			
+		</div>
+		<div class="radioplayer-body">
+			<div class="radioplayer-plugin">              
+<!-- 
+*
+* Plugin Space Starts here
+*
+		-->		<div id="background">
+					<div id="overlay">
+						<p>ALLE WEBCHANNELS</p>
+						<div id="overlayClose" onClick="closeOverlay();"></div>
+						<div id="channelContainer">				
+										
+						</div>
+					</div>
+
+					<div id="currentShowModule">
+						<div id="logo" onClick="showOverlay();" ></div>
+						<div id="show"></div>
+						<div id="showOnAir" ></div>
+						<div id="channels">
+							<div id="channelLeft" class="channelSwitch" onClick="switchLeft();"></div>
+							<div id="channelSwitcher">
+								<ul>
+									
+								</ul>
+							</div>					
+							<div id="channelRight" class="channelSwitch" onClick="switchRight();"></div>
+						</div>
+						<div id="leftChannel" onClick="playLeftChannel();"></div>
+						<div id="centerChannel" onClick="playStream();"></div>
+						<div id="rightChannel" onClick="playRightChannel();"></div>				
+					</div>
+
+					<div id="coverMetaModule">
+						<img id="cover" src="img/_channels_header/default.png" />
+						<div id="current">
+							<div id="now"></div>
+							<p id="artist"></p>
+							<p id="song"></p>				
+						</div>
+						<div id="socialMedia">
+							<a id="yt" href="" target="_blank"></a>
+							<a id="wiki" href="" target="_blank"></a>
+							<a id="google" href="" target="_blank"></a>
+							<a id="itunes" href="" target="_blank"></a>
+							<a id="amzn" href="" target="_blank"></a>
+						</div>
+
+						<div id="prevTrack">
+							<img id="prevTrackCover" src="img/_channels_header/default.png" />
+							<div id="prevTrackInfo">
+								<p id="before">Davor lief:</p>
+								<p id="beforeArtist">Sie hören BB RADIO.</p>
+								<p id="beforeSong">Viel Spaß beim Hören!</p>
+							</div>
+						</div>
+						<div id="playerControls">
+							<div id="controlsPlay" class="playUnpressed" onClick="playStream();" ></div>
+							<div id="controlsStop" class="stopUnpressed" onClick="stopStream();" ></div>
+							<div id="volDown"></div>
+							<div class="slide-control-group">
+					    		<input type="number" min="0" max="100" value="90" class="slider" data-control-group="homepage">
+							</div>
+							<div id="volUp"></div>	
+										
+						</div>
+						<div id="audioPlayer">
+							<audio id="player" preload >
+							</audio>
+						</div>
+					</div>
+				</div>
+
+
+							<!--<a href="http://webplayer.bbradio.de" target="_blank">
+					<img src="img/plugin-space-image.jpg" alt="" />
+				</a>-->
+			<!-- 
+* Plugin Space Ends here
+*
+--> 
+			</div>
+		</div>  
+	
+	</div>
+  </div>
+	
+<!-- jQuery UI with only: core, widget, mouse, position, draggable and droppable -->
+<script type="text/javascript" src="libs/jquery-1.10.0.min.js"></script>
+<script type="text/javascript" src="libs/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="libs/swfobject-2-2.js"></script>
+<script type="text/javascript" src="libs/plugins.js"></script>
+<script type="text/javascript" src="js/radioplayer.min.js"></script>
+<!-- css3-mediaqueries.min.js for IE less than 9 -->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="libs/css3-mediaqueries.min.js"></script>
+<![endif]-->
+ 
+<script type="text/javascript">
+radioplayer.init();
+
+var scrollbarWidth = 20;
+if($(window).height() < (875-scrollbarWidth) || $(window).width() < (750-scrollbarWidth)) {
+     $('body').css('overflow', 'visible');
+}
+</script>
+</body>
+</html>

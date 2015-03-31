@@ -1,0 +1,8 @@
+/**
+ *
+ * Media Queries
+ *
+ */
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+.radioplayer-globalnav .search-box input:focus { font-size:16px!important; }
+}

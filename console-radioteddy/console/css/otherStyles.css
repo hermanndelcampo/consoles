@@ -1,0 +1,80 @@
+body
+{
+	margin:0;
+}		
+
+#background
+{
+	width:730px;
+	height:713px;
+	position:absolute;
+	background:black;
+	background-image:url(../img/background.png);
+	margin:0 0 0 0;		
+	background-size:730px 713px;		
+}
+
+#overlay
+{
+	width:720px;
+	height:682px;
+	position:absolute;
+	z-index:3;
+	display:none;
+	margin:25px 0 0 5px;
+	background-image:url(../img/overlay.png);
+}
+
+#overlayClose
+{
+	width:90px;
+	height:90px;
+	float:right;
+	cursor:pointer;
+	background-image:url(../img/_icons/close_mouseover.png);
+	background-size:90px 90px;
+}
+
+#overlayClose:hover
+{
+	background-image:url(../img/_icons/close_normal.png);
+}
+
+#channelContainer
+{
+	width:600px;
+	height:500px;
+	margin:100px 0 0 60px;
+}
+
+#channelContainer div.overlayChannel
+{
+	height:125px;
+	width:300px;
+	float:left;
+}
+
+#channelContainer div.overlayChannel div
+{
+	width:172px;
+	height:92px;
+	margin-top:16px;
+	float:left;
+	cursor:pointer;
+}	
+
+#channelContainer div.overlayChannel p
+{
+	width:128px;
+	height:92px;
+	margin:16px 0 0 0;
+	float:left;
+	font-size: 12px;
+	font-family: Arial;
+	color:#004f8f;
+}
+
+#channelContainer div.overlayChannel p b
+{
+	font-size: 18px;
+}

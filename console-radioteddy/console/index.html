@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>  <html class="ie ie6 lte9 lte8 lte7" lang="en"> <![endif]-->
+<!--[if IE 7]>     <html class="ie ie7 lte9 lte8 lte7" lang="en"> <![endif]-->
+<!--[if IE 8]>     <html class="ie ie8 lte9 lte8" lang="en"> <![endif]-->
+<!--[if IE 9]>     <html class="ie ie9 lte9" lang="en"> <![endif]-->
+<!--[if gt IE 9]>  <html lang="en"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--
+All intellectual property rights in this Software throughout the world belong to UK Radioplayer, 
+rights in the Software are licensed (not sold) to subscriber stations, and subscriber stations 
+have no rights in, or to, the Software other than the right to use it in accordance with the 
+Terms and Conditions at www.radioplayer.co.uk/terms. You shall not produce any derivate works 
+based on whole or part of the Software, including the source code, for any other purpose other 
+than for usage associated with connecting to the UK Radioplayer Service in accordance with these 
+Terms and Conditions, and you shall not convey nor sublicense the Software, including the source 
+code, for any other purpose or to any third party, without the prior written consent of UK Radioplayer.
+-->
+<meta name="description" content="" />
+<meta name="keywords" content="" /> 
+<meta name="DCTERMS.created" content="" /> 
+<meta name="DCTERMS.modified" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/" /> 
+
+<title>Radio TEDDY</title> 
+
+<!--
+<link type="text/css" rel="stylesheet" media="screen" href="style/radioplayer.min.css" />
+-->
+
+<link type="text/css" rel="stylesheet" media="screen" href="style/radioplayer.min.css" />
+<link type="text/css" rel="stylesheet" media="screen" href="style/theme.css" />
+
+<link rel="stylesheet" type="text/css" href="css/otherStyles.css" />
+<link rel="stylesheet" type="text/css" href="css/coverMetaModule.css" />
+<link rel="stylesheet" type="text/css" href="css/currentShowModule.css" />
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" >
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script type="text/javascript">
+/**
+ * Console Settings
+ */
+
+var currentStationID = "57";
+var currentStationName = "Radio TEDDY";
+
+// -- nowPlayingSource can be changed from 'default' to one of: 'default-no-stream', 'stream', 'SI', 'PI'
+var nowPlayingSource = 'default';
+
+// -- xDomainProxyUrl should be the full URL to the xdomainproxy.html file, which by default is found in the preroll-framework directory
+//var xDomainProxyUrl = "http://your-console-domain.com/console-path/preroll-framework/xdomainproxy.html";
+var xDomainProxyUrl = "";
+
+// -- initOptions can be populated with settings for actions when the console starts. See integration guide for details.
+var initOptions = {
+	interstitial : {
+		enabled : false,
+		url : 'preroll-framework/'
+	},
+	songaction : {
+		enabled : false,
+		type : 'Buy',
+		baseurl : 'http://www.your-affiliate-url.com/'
+	},
+	overlay : {
+		enabled : false,
+		url : 'preroll-framework/',
+		mute : true
+	}
+};
+
+
+/**
+ * Audio Settings (V3 API)
+ */
+
+// -- Set audioLive to true for live streaming, or false for on demand
+var audioLive = true;
+
+// -- Added your primary stream details here
+var audioFlash = [{
+	audioType: 'http',
+	audioUrl: 'http://streams.ir-media-tec.com/radioteddy.mp3',
+	audioServer: '',
+	audioEndpoint: ''
+}];
+
+// -- Add your HTML5 supported stream details here
+var audioHTML = [{
+    audioType: 'http',
+    audioUrl: ''
+}];
+
+// -- bufferTime may need to be adjusted in rare circumstances to facilitate faster loading
+var bufferTime = 5;
+
+/* Appstettings */
+var vol = 0.9;																//Setting Standardvolume
+var channellistfeed = "http://webplayer.radioteddy.de/channellist.php";		//Mainfeed for the webplayer
+var streamfeedbase = "http://webplayer.radioteddy.de/channelinfo.php?ch=";	//Streamspezific Infofeedbase
+var defaultCoverUrl = "img/cover_default.gif";								//Url for the default-Cover			
+var defaultArtistText = 'Ihr hört Radio TEDDY...';							//Defaulttext for artistspace
+var defaultSongText = 'Viel Spaß beim Hören!';								//Defaulttext for songspace
+var defaultLastArtistText = 'Du hörst RADIO TEDDY.';							//Defaulttext for last-artistspace
+var defaultLastSongText = 'Viel Spaß beim Hören!';							//Defaulttext for last-songspace
+
+/* Initialized variables */		
+var current_center_index = 0;		//ID of centered Stream
+var now_playing_index = 0;			//ID of played Stream
+var stream_count = 0;				//Number of Streams
+var playing = false;				//Boolean for Playing-Status	
+var feedSongCopy = "init";			//Cache for last track
+
+/* Arrays for Streaminfos from Feeds */
+var streamlinksmp3 = [];			//Streamlinks in .mp3-Format
+var streamlinksogg = [];			//Streamlinks in .ogg-Format	
+var streamfeeds = [];				//Infofeeds for Streams
+var streamtoken = [];				//Unique Token for graphics etc.
+var streamnames = [];				//Name of the stream
+var streamclaims = [];				//Streamclaims
+
+var muted = false;
+
+/* Initilizing the volumeslider */
+$(function() {
+	var slider = $('#volBar');
+
+	slider.slider({
+		range: "min",
+		orientation: "vertical",
+		min: 0,
+		value:90,
+
+		stop: function(event, ui){
+			var audio = document.getElementById('streamPlayer');		
+			audio.volume = slider.slider('value') / 100;
+			vol = slider.slider('value') / 100;
+			$('#vol').removeClass().addClass('volNormal');
+			muted = false;
+		},
+	});			
+});
+
+
+/* Initializing and caching streaminfos */
+function init(){	
+	$.ajax({
+		type:"GET",
+		crossDomain: "true",
+		url: channellistfeed,
+		dataType: "json",
+		error: function(xhr, dings, thrown){
+			alert('Es ist ein schwerwiegender Fehler aufgetreten, Bitte überprüfen Sie Ihre Internetverbindung und aktivieren Sie Javascript');
+		},
+		success: function(data){			
+			var iObject = data;
+			$.each(iObject, function(){
+				streamfeeds[this.sort] = streamfeedbase + this.key;
+				streamtoken[this.sort] = this.key;
+				streamnames[this.sort] = this.name;
+				streamlinksmp3[this.sort] = this.mp3;
+				streamclaims[this.sort] = this.text;
+				stream_count++;
+			});
+			for(var i = 0; i < stream_count; i++){
+				$('#channelSwitcher ul').append('<li id="channel' + (i + 1) + '" class="active" style="background-image:url(img/_channels/_thumbnails/' + streamtoken[i] + '.png);"></li>');
+				$('#channelContainer').append('<div class="overlayChannel" onClick="overlayChange('+ i +')" ><div style="background-image:url(img/_channels/_thumbnails/'+ streamtoken[i] +'.png);"></div><p>'+ streamclaims[i] +'</p></div>');							
+			}
+
+			$('#channelSwitcher ul').prepend('<li id="channel0" class="inactive" style="background-image:url(img/_channels/_thumbnails/' + streamtoken[stream_count - 1] + '.png);"></li>');
+			$('#channelSwitcher ul').append('<li id="channel' + stream_count + 1 + '" class="inactive" style="background-image:url(img/_channels/_thumbnails/' + streamtoken[0] + '.png);"></li>');
+			
+			playStream();
+			getInfos();
+			getShow();
+		}
+	})
+}		
+
+/* Getting infos from spezific streamfeed after every 5 seconds */
+function getInfos(){
+	$.ajax({
+		type: "GET",
+		crossDomain: "true",
+		url: streamfeeds[current_center_index],
+		dataType: "json",
+		error: function(xhr, dings, thrown){
+			alert('error');
+			$('#artist').text(defaultArtistText);
+			$('#song').text(defaultSongText);
+			$('#cover').attr('src', defaultCoverUrl);
+			$('#beforeArtist').text(defaultLastArtistText);
+			$('#beforeSong').text(defaultLastSongText);
+			$('#prevTrackCover').attr('src', defaultCoverUrl);
+		},
+		success: function(data){
+			var object = data;					
+			if(object.err == "NODATA"){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+				$('#beforeArtist').text(defaultLastArtistText);
+				$('#beforeSong').text(defaultLastSongText);
+				$('#prevTrackCover').attr('src', defaultCoverUrl);
+			}
+			if(feedSongCopy != object[0].Titel){
+				$('#yt').css('display', 'none'); $('#wiki').css('display', 'none'); 
+				$('#google').css('display', 'none'); $('#itunes').css('display', 'none');
+				$('#amzn').css('display', 'none');
+				//Aktueller Titel
+				if(object[0].Titel == ""){
+					$('#artist').text(defaultArtistText);
+					$('#song').text(defaultSongText);
+					$('#cover').attr('src', defaultCoverUrl);
+				} else {
+					$('#artist').text(object[0].Interpret);
+					$('#song').text(object[0].Titel);
+					if(object[0].CoverArtPic != ""){
+						$('#cover').attr('src', object[0].CoverArtPic);
+					} else {
+						$('#cover').attr('src', defaultCoverUrl);
+					}								
+					if(object[0].Linkshop1 != ""){
+						$('#amzn').attr('href', object[0].Linkshop1);
+						$('#amzn').css('display', 'block');
+					}
+					if(object[0].Linkshop2 != ""){
+						$('#itunes').attr('href', object[0].Linkshop2);
+						$('#itunes').css('display', 'block');
+					}								
+				}
+				feedSongCopy = object[0].Titel;
+				//Letzter Titel
+				if(object[1].Titel == ""){
+					$('#prev').html('Du hörst RADIO TEDDY.<br>Viel Spaß beim Hören!');
+				} else {
+					$('#prev').text('davor: ' + object[1].Interpret.toUpperCase() + " " + object[1].Titel);
+				}							
+			}					
+		}
+	});				
+	setTimeout("getInfos();", 5000);			
+}
+
+function getInfosOnce(){
+	$.ajax({
+		type: "GET",
+		crossDomain: "true",
+		url: streamfeeds[current_center_index],
+		dataType: "json",
+		error: function(){
+			$('#artist').text(defaultArtistText);
+			$('#song').text(defaultSongText);
+			$('#cover').attr('src', defaultCoverUrl);
+			$('#beforeArtist').text(defaultLastArtistText);
+			$('#beforeSong').text(defaultLastSongText);
+			$('#prevTrackCover').attr('src', defaultCoverUrl);
+		},
+		success: function(data){
+			var object = data;
+			$('#yt').css('display', 'none'); $('#wiki').css('display', 'none'); 
+			$('#google').css('display', 'none'); $('#itunes').css('display', 'none');
+			$('#amzn').css('display', 'none'); 
+
+			if(object.err == "NODATA"){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+				$('#beforeArtist').text(defaultLastArtistText);
+				$('#beforeSong').text(defaultLastSongText);
+				$('#prevTrackCover').attr('src', defaultCoverUrl);
+			}
+			//Aktueller Titel
+			if(object[0].Titel == ""){
+				$('#artist').text(defaultArtistText);
+				$('#song').text(defaultSongText);
+				$('#cover').attr('src', defaultCoverUrl);
+			} else {
+				$('#artist').text(object[0].Interpret);
+				$('#song').text(object[0].Titel);
+				if(object[0].CoverArtPic != ""){
+					$('#cover').attr('src', object[0].CoverArtPic);
+				} else {
+					$('#cover').attr('src', defaultCoverUrl);
+				}								
+				if(object[0].Linkshop1 != ""){
+					$('#amzn').attr('href', object[0].Linkshop1);
+					$('#amzn').css('display', 'block');
+				}
+				if(object[0].Linkshop2 != ""){
+					$('#itunes').attr('href', object[0].Linkshop2);
+					$('#itunes').css('display', 'block');
+				}								
+			}
+			feedSongCopy = object[0].Titel;
+			//Letzter Titel
+			if(object[1].Titel == ""){
+				$('#prev').html('Du hörst RADIO TEDDY.<br>Viel Spaß beim Hören!');
+			} else {
+				$('#prev').text('davor: ' + object[1].Interpret.toUpperCase() + " " + object[1].Titel);
+			}												
+		}
+	});			
+}	
+
+function getShow(){
+	if(current_center_index == 0){
+		$.ajax({
+			type: "GET",
+			crossDomain: "true",
+			url: "http://webplayer.radioteddy.de/currentshow.php",	
+			dataType: "json",
+			error: function(xhr, dings, thrown){
+				$('#modName').text('-');
+				$('#modShow').text('Keine Informationen');
+			},
+			success: function(data){
+				var object = data;
+				if(object.moderator1 != "") {$('#modName').text(object.moderator1);}
+				else {$('#modName').text('-');}
+
+				if(object.sendung != "") {$('#modShow').text(object.sendung);}
+				else {$('#modShow').text('Keine Information');}
+
+				if(object.moderator1pic != "") {$('#modPic').attr('src', object.moderator1pic);}
+				else {$('#modPic').attr('src', defaultCoverUrl);}
+			}
+		});
+	}
+	setTimeout("getShow();", 5000);
+};
+
+function showOverlay(){
+	$('#overlay').css('display', 'block');
+}
+
+function closeOverlay(){
+	$('#overlay').css('display', 'none');
+}	
+
+function playStream(){	
+	$('#controlPlay').removeClass().addClass('playPressed');
+	$('#controlStop').removeClass().addClass('stopUnpressed');
+	$('#onAir').removeClass().addClass('onAir');	
+	var audio = document.getElementById('streamPlayer');	
+	if(audio.canPlayType('audio/mpeg;')){
+		$('#streamPlayer').attr('type', 'audio/mpeg');
+		$('#streamPlayer').attr('src', streamlinksmp3[current_center_index]);
+	} else {
+		$('#streamPlayer').attr('type', 'audio/ogg');
+		$('#streamPlayer').attr('src', streamlinksogg[current_center_index]);
+	}
+	if(current_center_index == 0){
+		$('#show').css('background-image', 'url(img/_channels/_header/'+ streamtoken[0] +'.png)');
+	} else {
+		$('#show').css('background-image', 'url(img/_channels/_header/'+ streamtoken[current_center_index] +'.png)');
+	}				
+	now_playing_index = current_center_index;			
+	playing = true;
+	muted = false;
+	$('#controlVol').removeClass().addClass('volNormal');
+	audio.volume = vol;
+	onAirChange();
+	audio.load();
+	audio.play();
+};
+
+function stopStream(){
+	$('#controlPlay').removeClass().addClass('playUnpressed');
+	$('#controlStop').removeClass().addClass('stopPressed');
+	var audio = document.getElementById('streamPlayer');
+	playing = false;
+	audio.pause();
+};
+
+function muteUnmuteStream(){
+	if(muted == true){
+		$('#controlVol').removeClass().addClass('volNormal');
+		var audio = document.getElementById('streamPlayer');		
+		audio.volume = vol;
+		muted = false;
+	} else {
+		$('#controlVol').removeClass().addClass('volMuted');
+		var audio = document.getElementById('streamPlayer');		
+		audio.volume = 0;
+		muted = true;
+	}
+};			
+
+function switchLeft(){
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) + 168;
+	if(current_center_index == 0){
+		current_center_index = stream_count - 1;
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			$('#channelSwitcher ul').css('margin-left', -((stream_count - 1) * 168));
+		}); 
+
+	} else {
+		current_center_index--;
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){});												
+	}	
+
+	if(current_center_index == 0){
+		$('#modPic').css('display', 'block');
+		$('#mod').css('display', 'block');
+	} else {
+		$('#modPic').css('display', 'none');
+		$('#mod').css('display', 'none');
+	}		
+
+	if(playing == false){
+		$('#controlPlay').removeClass().addClass('playUnpressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');	
+	} else if (playing == true && current_center_index != now_playing_index){
+		$('#controlPlay').removeClass().addClass('playUnpressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index == now_playing_index){
+		$('#controlPlay').removeClass().addClass('playPressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('onAir');
+	}
+	getInfosOnce();
+};
+
+function switchRight(){
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) - 168;
+	if(current_center_index == (stream_count - 1)){ 
+		current_center_index = 0; 
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			$('#channelSwitcher ul').css('margin-left', 0);
+			$('#modPic').css('display', 'block');
+			$('#mod').css('display', 'block');
+		}); 
+	} else {
+		current_center_index++;
+		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
+			$('#modPic').css('display', 'none');
+			$('#mod').css('display', 'none');
+		});
+	}
+
+	if(playing == false){
+		$('#controlPlay').removeClass().addClass('playUnpressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');	
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index != now_playing_index){
+		$('#controlPlay').removeClass().addClass('playUnpressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('notOnAir');
+	} else if (playing == true && current_center_index == now_playing_index){
+		$('#controlPlay').removeClass().addClass('playPressed');
+		$('#controlStop').removeClass().addClass('stopUnpressed');
+		$('#onAir').removeClass().addClass('onAir');
+	}
+	getInfosOnce();	
+};
+
+function playLeftChannel(){
+	switchLeft();				
+	playStream();
+};
+
+function playRightChannel(){
+	switchRight();
+	playStream();
+};
+
+function onAirChange(){
+	$('#show').removeClass().addClass('show0' + (current_center_index));
+};
+
+function overlayChange(index){
+	$('#channelSwitcher ul').css('margin-left', -(index * 168));	
+	current_center_index = index;
+	closeOverlay();
+	getInfosOnce();
+	playStream();
+	if(current_center_index == 0){
+		$('#modPic').css('display', 'block');
+		$('#mod').css('display', 'block');
+	} else {
+		$('#modPic').css('display', 'none');
+		$('#mod').css('display', 'none');
+	}
+};		
+
+</script>
+</head> 
+<body onLoad="init();">
+
+<!--
+
+In the following line starting <div class="radioplayer
+dark-theme may be swapped for light-theme
+
+'dark-theme' should be used to display a dark set of buttons, when you have chosen a light background
+'light-theme' should be used to display a white set of buttons, when you have chosen a dark background
+
+-->
+
+  <div class="radioplayer dark-theme">
+  
+    <h1 class="access">Radio TEDDY</h1>
+	
+	<div class="radioplayer-globalnav-wrapper">
+
+		<div class="radioplayer-globalnav">
+		
+		  <button type="button" class="menu-btn overlay-btn" rel="toggle" role="button" aria-haspopup="true" aria-owns="overlay-container">
+		    <span>Toggle radioplayer.de Menu</span>
+		  </button>
+		  
+		  <div class="search-box">
+			<fieldset>
+				<h2 class="access">Search</h2>
+				<input type="text" name="searchq" id="search-input" value="" maxlength="27" autocomplete="off" />
+				<button type="button" id="search-button" title="Search"><span>Search</span></button>
+				<button type="button" id="search-clear" title="Clear search terms"><span>Clear search terms</span></button>
+			</fieldset>
+		  </div>
+		  
+		  <span class="rp-logo overlay-btn">
+			radioplayer.de
+		  </span>
+		
+		</div>
+	
+	</div>
+	
+	<div id="overlay-container" class="overlay-container">
+		
+		  <div class="search-container">
+		  
+			<div class="tabs" role="navigation">
+			  <ul id="search-nav-toggle" class="nav">
+				<li>
+					<a href="#">All<span class="menu_toggle"></span></a>
+				</li>
+			  </ul>
+			  <ul id="search-nav-main" class="nav">
+				<li class="first" data-content="searchall">
+				  <a href="#" role="button" aria-owns="search-all-cont"><span>All</span></a>
+				</li>
+				<li data-content="searchlive">
+				  <a href="#" role="button" aria-owns="search-live-cont"><span>Live</span></a>
+				</li>
+				<li data-content="searchod">
+				  <a href="#" role="button" aria-owns="search-od-cont"><span>Catch Up</span></a>
+				</li>
+			  </ul>
+			</div>
+			
+			<div class="search-wrapper">
+			
+			  <div class="tab-container scrollable-wrapper" id="search-all-cont"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="search-live-cont"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="search-od-cont"></div>
+			
+			  <span class="spinner"><img src="img/spinner.gif" alt="" /></span>
+			
+			</div>
+		  
+		  </div>
+		  
+		  <div class="suggest-container" data-results="0">
+		  
+			<div class="scrollable-wrapper">
+			
+				<div id="suggest-results"></div>
+				
+				<div class="suggest-item show-all"><a href="#"></a></div>
+			
+			</div>
+		  
+		  </div>
+		
+		  <div class="menu-container">
+		  
+			<div class="tabs" role="navigation">
+			  <ul id="menu-nav-toggle" class="nav">
+				<li>
+					<a href="#">My Stations<span class="menu_toggle"></span></a>
+				</li>
+			  </ul>
+			  <ul id="menu-nav-main" class="nav">
+				<li class="first" data-color="#ff4539" data-content="mystations">
+				  <a href="#" role="button" aria-owns="mystations-container"><span>My Stations</span></a>
+				</li>
+				<li data-color="#9b2d77" data-content="history">
+				  <a href="#" role="button" aria-owns="history-container"><span>Recent</span></a>
+				</li>
+				<li data-color="#03303d" data-content="recommended">
+				  <a href="#" role="button" aria-owns="recom-container"><span>Recommended</span></a>
+				</li>
+				<li data-color="#f6b220" data-content="azlist">
+				  <a href="#" role="button" aria-owns="az-container"><span>A-Z List</span></a>
+				</li>
+			  </ul>
+			</div>
+			
+			<div class="tabs-wrapper">
+			
+			  <div class="tab-container scrollable-wrapper" id="mystations-container"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="history-container"></div>
+			  
+			  <div class="tab-container scrollable-wrapper" id="recom-container"></div>
+			  
+			  <div class="tab-container" id="az-container">
+				
+				<div class="alphabet">
+				  <ul></ul>
+				</div>
+				
+				<div class="sticky-divide-wrapper">
+				  <div class="sticky-divide">#</div>
+				
+				  <div class="scrollable-wrapper azlist-container" id="azlist-container"></div>
+				</div>
+				
+			  </div>
+			  
+			  <span class="spinner"><img src="img/spinner.gif" alt="" /></span>
+			  
+			</div>
+			
+		  </div>
+		
+	</div>
+
+    <div class="radioplayer-emp-container">
+        <div id="empv3"></div>
+    </div>
+
+	<div class="radioplayer-localwrapper">
+	
+		<div class="radioplayer-head">
+		
+			<a class="stn-logo"  href="http://www.radioteddy.de" target="_blank"   id="station-logo-link" rel="external">Radio TEDDY</a>
+		  
+			<div id="controls">
+				<h2 class="access">Player Controls</h2>  
+				
+				<div id="mystations-toggle">
+					<button type="button" id="toggle-mystations"><span>Toggle this station in My Stations</span></button>
+				</div>
+				 
+				<div id="play-controls">
+					<button type="button" id="play" title="Play"><span>Play</span></button>
+					<button type="button" id="pause" title="Pause"><span>Pause</span></button>
+					<button type="button" id="stop" title="Stop"><span>Stop</span></button>
+				</div>
+				
+				<div id="volume-controls">
+					<div id="volume-control" class="p100"></div>
+					<button type="button" id="volume-mute" class="access" tabindex="0"><span>Mute or unmute volume</span></button>
+					<button type="button" id="volume-1" class="access" tabindex="0"><span>Set volume to 20%</span></button>
+					<button type="button" id="volume-2" class="access" tabindex="0"><span>Set volume to 40%</span></button>
+					<button type="button" id="volume-3" class="access" tabindex="0"><span>Set volume to 60%</span></button>
+					<button type="button" id="volume-4" class="access" tabindex="0"><span>Set volume to 80%</span></button>
+					<button type="button" id="volume-5" class="access" tabindex="0"><span>Set volume to 100%</span></button>
+				</div>
+				
+			</div>
+			
+			<div class="now-playing-strip">
+			
+			  <div id="live-strip" class="loading">
+
+                <div class="loading-indicator"></div>
+                <div class="live-info">
+                    <span id="live" class="live-indicator">Live</span>
+                    <div class="scrolling-container" tabindex="0">
+                        <div class="scrolling-text"></div>
+                    </div>
+                </div>
+			  </div>
+			  
+			  <div id="od-strip">
+		  
+		  		<div id="duration">Loading...</div>
+		  
+		  		<div id="progress-scrubber-background">
+				
+					<div id="progress-scrubber-playback-bar"></div> 
+					<div id="progress-scrubber-load-bar"></div> 
+					<div id="od-title"></div>
+					
+					<div id="progress-scrubber-handle"></div> 
+				
+				</div>
+			  
+			  </div>	
+				
+			</div>
+			
+		</div>
+		<div class="radioplayer-body">
+			<div class="radioplayer-plugin">              
+<!-- 
+*
+* Plugin Space Starts here
+*
+-->			
+				<div id="background">
+
+					<div id="overlay">
+						<div id="overlayClose" onClick="closeOverlay();"></div>
+						<div id="channelContainer">
+															
+						</div>
+					</div>
+
+					<div id="currentShowModule">
+						<div id="logo" onClick="showOverlay();"></div>
+						<div id="show"></div>
+						<div id="pointer"></div>
+						<div id="channels">
+							<div id="channelLeft" class="channelSwitch" onClick="switchLeft();"></div>
+							<div id="channelSwitcher">
+								<ul>
+								
+								</ul>
+							</div>			
+							<div id="channelRight" class="channelSwitch" onClick="switchRight();"></div>
+						</div>
+						<div id="leftChannel" onClick="playLeftChannel();"></div>
+						<div id="centerChannel" onClick="playStream();"></div>
+						<div id="rightChannel" onClick="playRightChannel();"></div>					
+					</div>
+
+				
+
+					<div id="coverMetaModule">
+						<img id="cover" src="" />
+						<div id="current">
+							<div id="currentInfos">
+								<div id="socialMedia">
+									<a id="itunes" href="" target="_blank"></a>
+									<a id="amzn" href="" target="_blank"></a>
+								</div>
+								<p id="artist"></p>
+								<p id="song"></p>
+								<hr>
+								<p id="prev"></p>
+							</div>			
+						</div>
+						<img id="modPic" src"" />
+						<div id="mod">
+							<div id="modInfos">
+								<a href="http://radioteddy.de/dein-radio-teddy/radio-teddy-moderatoren/" target="_blank"><p id="modName"></p></a>
+								<a href="http://radioteddy.de/dein-radio-teddy/radio-teddy-programm/" target="_blank"><p id="modShow"></p></a>
+							</div>
+						</div>
+						<div id="player">
+							<div id="controlStop" class="stopUnpressed" onClick="stopStream();" ></div>
+							<div id="controlPlay" class="playUnpressed" onClick="playStream();" ></div>				
+							<div id="controlVol"  class="volNormal" onClick="muteUnmuteStream();"></div>				
+							<section>
+								<div id="volBar"></div>
+								<div id="volBottom"></div>							
+							</section>									
+						</div>
+						<div id="audioPlayer">
+							<audio id="streamPlayer" preload >
+							</audio>
+						</div>
+						<div class="sendungJavascript" style="display:none;"></div>
+					</div>
+				</div>
+							<!--<a href="http://webplayer.radioteddy.de" target="_blank">
+					<img src="img/plugin-space-image.jpg" alt="" />
+				</a>-->
+			<!-- 
+* Plugin Space Ends here
+*
+--> 
+			</div>
+		</div>  
+	
+	</div>
+  </div>
+	
+<!-- jQuery UI with only: core, widget, mouse, position, draggable and droppable -->
+<script type="text/javascript" src="libs/jquery-1.10.0.min.js"></script>
+<script type="text/javascript" src="libs/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="libs/swfobject-2-2.js"></script>
+<script type="text/javascript" src="libs/plugins.js"></script>
+<script type="text/javascript" src="js/radioplayer.min.js"></script>
+<!-- css3-mediaqueries.min.js for IE less than 9 -->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="libs/css3-mediaqueries.min.js"></script>
+<![endif]-->
+ 
+<script type="text/javascript">
+radioplayer.init();
+
+var scrollbarWidth = 20;
+if($(window).height() < (875-scrollbarWidth) || $(window).width() < (750-scrollbarWidth)) {
+     $('body').css('overflow', 'visible');
+}
+</script>
+</body>
+</html>

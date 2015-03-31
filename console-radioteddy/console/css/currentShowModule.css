@@ -1,0 +1,150 @@
+#currentShowModule
+{
+	width:730px;
+	height:328px;
+	margin:0;
+	padding-top:6px;
+	z-index:2;
+	position:absolute;
+}
+
+#currentShowModule #logo
+{
+	width:215px;
+	height:215px;
+	margin:10px 0 0 8px;
+	float:left;
+	cursor:pointer;
+	background-image:url(../img/_logo/logo_normal.png);	
+	background-repeat:no-repeat;
+	background-size:215px 215px;
+}
+
+#currentShowModule #logo:hover
+{
+	background-image:url(../img/_logo/logo_mouseover.png);
+}
+
+#currentShowModule #show
+{
+	width:450px;
+	height:225px;
+	margin:6px 0 0 40px;
+	float:left;
+	background-repeat:no-repeat;
+	background-size:450px 225px;
+}
+
+#currentShowModule #pointer
+{
+	width:30px;
+	height:20px;
+	position:absolute;
+	margin:230px 0 0 347px;
+	z-index:3;
+	background-image:url(../img/_channels/aktueller_stream.png);
+	background-size:30px 20px;
+}
+
+#currentShowModule #channels
+{
+	width:694px;
+	height:95px;
+	margin:2px 0 0 15px;
+	float:left;
+}
+
+#currentShowModule #channels .channelSwitch
+{
+	width:95px;
+	height:95px;
+	float:left;
+	cursor:pointer;
+}
+
+#currentShowModule #channels #channelLeft
+{
+	background-image:url(../img/_icons/pfeil_links.png);
+	background-repeat:no-repeat;
+	background-size:95px 95px;
+
+}
+
+#currentShowModule #channels #channelSwitcher
+{
+	height:95px;
+	width:504px;
+	float:left;
+	margin:0 0 0 0;
+	overflow:hidden;
+}
+
+#currentShowModule #channels #channelSwitcher ul
+{
+	height:95px;
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+#currentShowModule #channels #channelSwitcher ul li
+{
+	width:168px;
+	height:95px;
+	float:left;
+	background-repeat: no-repeat;
+	background-position:0 4px;
+}
+
+/*#currentShowModule #channels #channelSwitcher ul li:nth-child(1){background-image:url(../img/_channels/_thumbnails/weihnachtslieder.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(2){background-image:url(../img/_channels/_thumbnails/livestream.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(3){background-image:url(../img/_channels/_thumbnails/teddy_cool.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(4){background-image:url(../img/_channels/_thumbnails/kinder_disco.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(5){background-image:url(../img/_channels/_thumbnails/gute_nacht.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(6){background-image:url(../img/_channels/_thumbnails/kinder_lieder.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(7){background-image:url(../img/_channels/_thumbnails/made_in_germany.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(8){background-image:url(../img/_channels/_thumbnails/softmix.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(9){background-image:url(../img/_channels/_thumbnails/weihnachtslieder.png);}
+#currentShowModule #channels #channelSwitcher ul li:nth-child(10){background-image:url(../img/_channels/_thumbnails/livestream.png);}*/
+
+#currentShowModule #channels #channelRight
+{
+	background-image:url(../img/_icons/pfeil_rechts.png);
+	background-repeat:no-repeat;
+	background-size:95px 95px;
+}
+
+#currentShowModule #leftChannel
+{
+	width:168px;
+	height:95px;
+	z-index:3;
+	cursor:pointer;
+	position:absolute;
+	margin:233px 0 0 110px;
+}
+
+#currentShowModule #centerChannel
+{
+	width:168px;
+	height:95px;
+	z-index:3;
+	cursor:pointer;
+	position:absolute;
+	margin:233px 0 0 278px;	
+}
+
+#currentShowModule #rightChannel
+{
+	width:168px;
+	height:95px;
+	z-index:3;
+	cursor:pointer;
+	position:absolute;
+	margin:233px 0 0 446px;
+}
+
+
+
+
+

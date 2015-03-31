@@ -1,0 +1,288 @@
+#coverMetaModule
+{
+	width:730px;
+	height:336px;
+	margin:0 0 0 0;
+	float:left;
+}
+
+#coverMetaModule #cover
+{
+	width:234px;
+	height:234px;
+	margin:18px 0 0 23px;
+	float:left;
+}
+
+#coverMetaModule #current
+{
+	width:409px;
+	height:237px;
+	padding:0 15px 0 15px;
+	font-family:Arial;
+	color:#FFF;
+	float:left;
+	margin:17px 0 0 16px;
+	background-image:url(../img/_player_bg/titel_info.png);
+}
+
+#coverMetaModule #current #now
+{
+	width:72px;
+	height:20px;
+	margin:8px 0 5px 0px;
+	float:left;
+	background-image:url(../img/_buttons/sie_hoeren.png);
+}
+
+#coverMetaModule #current #onAir.notOnAir{background-image:none}
+#coverMetaModule #current #onAir.onAir{background-image:url(../img/_on_air/on_air_icon.png);}
+
+#coverMetaModule #current #artist
+{
+	width:409px;
+	height:60px;
+	overflow: hidden;
+	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight:bold;
+	font-size:20px;
+	margin:0;
+	text-transform: uppercase;
+}
+
+#coverMetaModule #current #song
+{
+	width:409px;
+	height:20px;
+	overflow: hidden;
+	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:15px;
+	margin-top:3px;
+}
+
+#coverMetaModule #socialMedia
+{
+	width:409px;
+	height:40px;
+	margin:195px 0 0 291px;
+	position:absolute;
+}
+
+#coverMetaModule #socialMedia a 
+{
+	width:50px;
+	height:40px;
+	float:left;
+	display:none;
+	background-repeat:no-repeat;
+	background-position:5px 0;
+}
+
+#coverMetaModule #socialMedia #yt{background-image:url(../img/_link_buttons/youtube.png);}
+#coverMetaModule #socialMedia #wiki{background-image:url(../img/_link_buttons/wikipedia.png);}
+#coverMetaModule #socialMedia #google{background-image:url(../img/_link_buttons/googleplus.png);}
+#coverMetaModule #socialMedia #itunes{background-image:url(../img/_link_buttons/itunes.png);}
+#coverMetaModule #socialMedia #amzn{background-image:url(../img/_link_buttons/amazon.png);}
+
+#coverMetaModule #prevTrack
+{
+	width:239px;
+	height:58px;
+	margin:16px 0 0 18px;
+	float:left;
+	background-image:url(../img/_player_bg/letzter_song.png);
+}
+
+#coverMetaModule #prevTrack #prevTrackCover
+{
+	width:58px;
+	height:58px;
+	background:#FFF;
+	float:left;
+}
+
+#coverMetaModule #prevTrack #prevTrackInfo
+{
+	width:176px;
+	height:58px;
+	margin-left:5px;
+	float:left;
+	color:#FFF;
+	font-family:Arial;
+}
+
+#coverMetaModule #prevTrack #prevTrackInfo #before
+{
+	width:170px;
+	height:15px;
+	overflow:hidden;
+	font-size:12px;
+	margin:4px 0 0 0;
+}
+#coverMetaModule #prevTrack #prevTrackInfo #beforeArtist
+{
+	width:170px;
+	height:15px;
+	overflow:hidden;
+	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight:bold;
+	font-size:12px;
+	margin:3px 0 3px 0;
+
+}
+#coverMetaModule #prevTrack #prevTrackInfo #beforeSong
+{
+	width:170px;
+	height:15px;
+	overflow:hidden;
+	font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:12px;
+	margin:0 0 5px 0;
+}
+
+#coverMetaModule #playerControls
+{
+	width:439px;
+	height:58px;
+	margin:16px 0 0 16px;
+	float:left;
+	background-image:url(../img/_player_bg/steuerung.png);
+}
+
+#coverMetaModule #playerControls #controlsPlay
+{
+	width:58px;
+	height:58px;
+	margin:0;
+	float:left;
+	cursor:pointer;
+	background-repeat:no-repeat;
+	background-position:9px 9px;
+	
+}
+
+#coverMetaModule #playerControls #controlsPlay:hover{background-image:url(../img/_buttons/play_white.png);}
+
+.playPressed{background-image:url(../img/_buttons/play_white.png);}
+.playUnpressed{background-image:url(../img/_buttons/play_black.png);}
+
+#coverMetaModule #playerControls #controlsStop
+{
+	width:58px;
+	height:58px;
+	margin:0;
+	float:left;
+	cursor:pointer;	
+	background-repeat:no-repeat;
+	background-position:9px 9px;
+	
+}
+
+#coverMetaModule #playerControls #controlsStop:hover{background-image:url(../img/_buttons/stop_white.png);}
+
+.stopPressed{background-image:url(../img/_buttons/stop_white.png);}
+.stopUnpressed{background-image:url(../img/_buttons/stop_black.png);}
+
+section {  
+    width: 200px;  
+    height: 58px; 
+    float:left; 
+    margin:0 0 0 0; 
+    position: relative; 
+} 
+
+#coverMetaModule #playerControls #volDown
+{
+	width:58px;
+	height:58px;
+	float:left;
+	cursor:pointer;
+	background-repeat:no-repeat;
+	background-position:9px 9px;
+	background-image:url(../img/_buttons/volDown_black.png);
+}
+
+#coverMetaModule #playerControls #volDown:hover{background-image:url(../img/_buttons/volDown_white.png);}
+
+#coverMetaModule #playerControls #volBar
+{
+	width:200px;
+	height:4px;
+	margin:27px 0 0 0;
+	z-index:3;
+	border:none;
+	background:white;
+	background-repeat:no-repeat;
+	float:left;
+}
+
+#coverMetaModule #playerControls #volUp
+{
+	width:58px;
+	height:58px;
+	float:left; 
+	cursor:pointer;
+	margin:0 0 0 0;
+	background-repeat:no-repeat;
+	background-position:9px 9px;
+	background-image:url(../img/_buttons/volUp_black.png);
+}
+
+#coverMetaModule #playerControls #volUp:hover{background-image:url(../img/_buttons/volUp_white.png);}
+
+#coverMetaModule #playerControls #volBar .ui-slider-handle
+{
+	width:12px;
+	height:12px;
+	border:none;
+	position:absolute;
+	margin-top:1px;
+	cursor:pointer;
+	background:#000;
+	border-radius: 12px;
+}	
+
+#coverMetaModule #playerControls #volBar .ui-slider-range 
+{
+	background:#000;
+	height:4px;	
+	position:absolute;
+}
+
+.slide-control-group {
+	width:207px;
+	height:58px;
+    margin:0;
+    float:left;
+}
+
+.slide-control {
+	width:200px;
+	height:4px;
+    /*width: 315px;
+    height:15px;*/
+    position:relative;
+    border:1px solid #d6d6d6;
+    background:#ffffff;
+    display:block;
+    overflow: visible;
+    float:left;
+   	margin:25px 0 0 3px;
+   	border-radius:5px;
+}
+
+.slide-control-button {
+    position:absolute;
+    z-index:2;
+    width:25px;
+    height:25px;
+    left:0;
+    margin-left: -14px;
+    top: -10px;
+    bottom:-34px;
+    background: #eee;
+    border-radius:20px;
+}
+
+
+

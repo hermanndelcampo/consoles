@@ -1,0 +1,280 @@
+#coverMetaModule
+{
+	width:730px;
+	height:379px;
+	margin:334px 0 0 0;
+	z-index:2;
+	position:absolute;
+}
+
+#coverMetaModule img#cover
+{
+	width:320px;
+	height:320px;
+	margin:15px 0 0 15px;
+	background:#009fe3;
+	float:left;
+	position:absolute;
+}
+
+#coverMetaModule #current
+{
+	width:730px;
+	height:360px;
+	margin:0 0 0 0;
+	float:left;
+	position:absolute;
+	background-image:url(../img/player.png);	
+	background-repeat: no-repeat;
+}
+
+#coverMetaModule #current #currentInfos
+{
+	width:320px;
+	height:220px;
+	margin:50px 0 0 360px;
+	color:#FFF;
+	font-family: Arial;
+}
+
+#coverMetaModule #current #currentInfos #socialMedia
+{
+	width:250px;
+	height:40px;
+	margin:0 0 5px -3px;
+}
+
+#coverMetaModule #current #currentInfos #socialMedia #amzn
+{
+	width:50px;
+	height:40px;
+	float:left;
+	display:none;
+	background-repeat:no-repeat;
+	background-position:0 0;
+	background-image:url(../img/_link_buttons/amazon.png);
+}
+
+#coverMetaModule #current #currentInfos #socialMedia #itunes
+{
+	width:50px;
+	height:40px;
+	float:left;
+	display:none;
+	background-repeat:no-repeat;
+	background-position:0 0;
+	background-image:url(../img/_link_buttons/itunes.png);
+}
+
+#coverMetaModule #current #currentInfos #artist
+{
+	width:320px;
+	height:73px;
+	font-size:21px;
+	font-weight: bold;
+	text-transform: uppercase;
+	overflow: hidden;
+	margin-bottom:0px;
+}
+
+#coverMetaModule #current #currentInfos #song
+{
+	width:320px;
+	height:20px;
+	font-size:16px;
+	font-weight: bold;
+	margin:7px 0 0 0;
+	overflow: hidden;
+}
+
+#coverMetaModule #current #currentInfos hr
+{
+	border:1px solid lightblue;
+}
+
+#coverMetaModule #current #currentInfos #prevLabel
+{
+	width:50px;
+	margin:5px 0 0 0;
+	float:left;
+}
+
+#coverMetaModule #current #currentInfos #prev
+{
+	margin:5px 0 0 0;
+	width:270px;
+	height:36px;
+	float:left;
+	overflow: hidden;
+}
+
+#coverMetaModule img#modPic
+{
+	width:82px;
+	height:82px;
+	background:#cce7f8;
+	margin:285px 0 0 80px;
+	position:absolute;
+}
+
+#coverMetaModule #mod
+{
+	width:260px;
+	height:101px;
+	position:absolute;
+	margin:278px 0 0 60px;
+	background-image:url(../img/moderatoren_modul.png);
+	background-repeat: no-repeat;
+	background-size:260px 101px;
+}
+
+#coverMetaModule #mod #modInfos
+{
+	width:105px;
+	height:70px;
+	margin:20px 0 0 115px;
+	color:#004f8f;
+	font-family: Arial;
+}
+
+#coverMetaModule #mod #modInfos a
+{
+	text-decoration: none;
+	color:#004f8f;
+}
+
+#coverMetaModule #mod #modInfos #modName
+{
+	width:105px;
+	height:27px;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 22px;
+	margin:0;
+	overflow:hidden;
+}
+
+#coverMetaModule #mod #modInfos #modShow
+{
+	width:105px;
+	height:28px;
+	margin:5px 0 0 0;
+	font-size: 11px;
+	overflow: hidden;
+}
+
+#coverMetaModule #player
+{
+	width:347px;
+	height:100px;
+	margin:283px 0 0 348px;
+	float:left;
+	position:absolute;
+}
+
+#coverMetaModule #player #controlPlay
+{
+	width:95px;
+	height:95px;
+	margin-left:5px;
+	float:left;
+	cursor:pointer;
+	background-repeat:no-repeat;
+	background-size:95px 95px;
+}
+
+#coverMetaModule #player #controlPlay:hover{background-image:url(../img/_icons/play_mouseover.png);}
+
+.playPressed{background-image:url(../img/_icons/play_mouseover.png);}
+.playUnpressed{background-image:url(../img/_icons/play_normal.png);}
+
+#coverMetaModule #player #controlStop
+{
+	width:95px;
+	height:95px;
+	margin-left:0;
+	float:left;
+	cursor:pointer;	
+	background-repeat:no-repeat;
+	background-size:95px 95px;
+}
+
+#coverMetaModule #player #controlStop:hover{background-image:url(../img/_icons/stop_mouseover.png);}
+
+.stopPressed{background-image:url(../img/_icons/stop_mouseover.png);}
+.stopUnpressed{background-image:url(../img/_icons/stop_normal.png);}
+
+#coverMetaModule #player #controlVol
+{
+	width:95px;
+	height:95px;
+	margin-left:5px;
+	float:left;
+	cursor:pointer;	
+	background-repeat:no-repeat;
+	background-size:95px 95px;
+}
+
+#coverMetaModule #player #controlVol.volNormal:hover{background-image:url(../img/_icons/_volume/volume_normal.png);}
+#coverMetaModule #player #controlVol.volMuted:hover{background-image:url(../img/_icons/_volume/volume_mute_normal.png);}
+
+.volNormal{background-image:url(../img/_icons/_volume/volume_mouseover.png);}
+.volMuted{background-image:url(../img/_icons/_volume/volume_mute_mouseover.png);}
+
+section {  
+    width: 32px;  
+    height: 75px; 
+    float:left; 
+    margin:13px 0 0 5px;
+    background-image:url(../img/_icons/_volume/_regler/balken_background.png);
+    background-repeat:no-repeat;
+    position: relative;  
+    background-size:32px 75px;
+} 
+
+#coverMetaModule #player #volBar
+{
+	width:14px;
+	height:51px;
+	margin:5px 0 0 5px;
+	border-radius:50px;
+	z-index:3;
+	border:0;
+	opacity:1.0;
+	background:#c75b40;
+	float:left;
+}
+
+#coverMetaModule #player #volBottom
+{
+	width:14px;
+	height:8px;
+	margin:56px 0 0 5px;
+	border-radius:0px 0px 50px 50px;
+	position:absolute;
+	background:#FFF;
+}
+
+#coverMetaModule #player #volBar .ui-slider-handle
+{
+	width:14px;
+	height:8px;
+	margin:8px 0 0 5px;
+	border-radius:50px 50px 0px 0px;
+	border:0;
+	cursor:pointer;
+	background:#FFF;
+}	
+
+#coverMetaModule #player #volBar .ui-slider-range 
+{
+	width:14px;
+	border:0;
+	border-radius:0px;
+	background:#FFF;
+	position:absolute;
+}
+
+
+
+
