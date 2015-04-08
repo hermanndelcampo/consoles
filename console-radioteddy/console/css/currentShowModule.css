@@ -49,7 +49,7 @@
 	width:30px;
 	height:20px;
 	position:absolute;
-	margin:190px 0 0 347px;
+	margin:185px 0 0 347px;
 	z-index:3;
 	background-image:url(../img/_channels/aktueller_stream.png);
 	background-size:30px 20px;
@@ -66,7 +66,7 @@
 
 #currentShowModule #channels .channelSwitch
 {
-	width:113px;
+	width:95px;
 	height:95px;
 	float:left;
 	cursor:pointer;
@@ -78,16 +78,16 @@
 	background-image:url(../img/_icons/pfeil_links.png);
 	background-repeat:no-repeat;
 	background-size:95px 95px;
-	background-position:9px 0px;
 }
 
 #currentShowModule #channels #channelSwitcher
 {
 	height:95px;
-	width:504px;
+	width:540px;
 	float:left;
 	margin:0 0 0 0;
 	overflow:hidden;
+	background:lightgreen;
 }
 
 #currentShowModule #channels #channelSwitcher ul
@@ -100,11 +100,12 @@
 
 #currentShowModule #channels #channelSwitcher ul li
 {
-	width:168px;
+	width:180px;
 	height:95px;
 	float:left;
 	background-repeat: no-repeat;
-	background-position:0 4px;
+	background-size:180px 95px;
+	/*background-position:0 4px;*/
 }
 
 /*#currentShowModule #channels #channelSwitcher ul li:nth-child(1){background-image:url(../img/_channels/_thumbnails/weihnachtslieder.png);}
@@ -123,7 +124,6 @@
 	background-image:url(../img/_icons/pfeil_rechts.png);
 	background-repeat:no-repeat;
 	background-size:95px 95px;
-	background-position:9px 0px;
 }
 
 #currentShowModule #leftChannel

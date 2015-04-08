@@ -393,11 +393,11 @@ function muteUnmuteStream(){
 };			
 
 function switchLeft(){
-	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) + 168;
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) + 180;
 	if(current_center_index == 0){
 		current_center_index = stream_count - 1;
 		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
-			$('#channelSwitcher ul').css('margin-left', -((stream_count - 1) * 168));
+			$('#channelSwitcher ul').css('margin-left', -((stream_count - 1) * 180));
 		}); 
 
 	} else {
@@ -430,7 +430,7 @@ function switchLeft(){
 };
 
 function switchRight(){
-	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) - 168;
+	var mar = parseInt($('#channelSwitcher ul').css('marginLeft'), 10) - 180;
 	if(current_center_index == (stream_count - 1)){ 
 		current_center_index = 0; 
 		$('#channelSwitcher ul').animate({marginLeft:mar}, 200, function(){
@@ -755,6 +755,7 @@ dark-theme may be swapped for light-theme
 								<p id="prev"></p>
 							</div>			
 						</div>
+						<div id="contact"></div>
 						<!--<img id="modPic" src"" />
 						<div id="mod">
 							<div id="modInfos">
